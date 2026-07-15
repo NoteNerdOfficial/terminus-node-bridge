@@ -12,6 +12,7 @@ export interface ExecFileOptions {
     cwd?: string;
     timeout?: number;
     maxBuffer?: number;
+    env?: Record<string, string | undefined>;
 }
 /** What a failed execFileText() rejects with. A real Error subclass (not a
  *  plain object) so rejecting with one follows normal Promise-rejection
