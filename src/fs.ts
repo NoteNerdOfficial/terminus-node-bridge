@@ -68,3 +68,11 @@ export async function deleteFileIfExists(filePath: string): Promise<void> {
 export function randomHex(byteLength: number): string {
   return randomBytes(byteLength).toString("hex");
 }
+
+/** Sets the file's mode to rwxr-xr-x (0o755) -- for self-provisioned scripts
+ *  that need their own exec bit (e.g. a shebang-invoked shell script),
+ *  since git doesn't reliably preserve it and a file written out fresh at
+ *  runtime starts without it. */
+export async function makeExecutable(filePath: string): Promise<void> {
+  await fsPromises.chmod(filePath, 0o755);
+}

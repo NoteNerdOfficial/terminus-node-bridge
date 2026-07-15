@@ -44,6 +44,7 @@ exports.appendTextFile = appendTextFile;
 exports.makeDirRecursive = makeDirRecursive;
 exports.deleteFileIfExists = deleteFileIfExists;
 exports.randomHex = randomHex;
+exports.makeExecutable = makeExecutable;
 const fs_1 = require("fs");
 const fsPromises = __importStar(require("fs/promises"));
 const nodePath = __importStar(require("path"));
@@ -104,4 +105,11 @@ async function deleteFileIfExists(filePath) {
 }
 function randomHex(byteLength) {
     return (0, crypto_1.randomBytes)(byteLength).toString("hex");
+}
+/** Sets the file's mode to rwxr-xr-x (0o755) -- for self-provisioned scripts
+ *  that need their own exec bit (e.g. a shebang-invoked shell script),
+ *  since git doesn't reliably preserve it and a file written out fresh at
+ *  runtime starts without it. */
+async function makeExecutable(filePath) {
+    await fsPromises.chmod(filePath, 0o755);
 }

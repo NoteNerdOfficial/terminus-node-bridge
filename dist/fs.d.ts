@@ -17,3 +17,8 @@ export declare function makeDirRecursive(dirPath: string): Promise<void>;
 /** No-op if the file doesn't already exist. */
 export declare function deleteFileIfExists(filePath: string): Promise<void>;
 export declare function randomHex(byteLength: number): string;
+/** Sets the file's mode to rwxr-xr-x (0o755) -- for self-provisioned scripts
+ *  that need their own exec bit (e.g. a shebang-invoked shell script),
+ *  since git doesn't reliably preserve it and a file written out fresh at
+ *  runtime starts without it. */
+export declare function makeExecutable(filePath: string): Promise<void>;
