@@ -37,7 +37,7 @@ export class ExecFileError extends Error {
 
 export function execFileText(command: string, args: string[], options: ExecFileOptions = {}): Promise<ExecFileResult> {
   return new Promise((resolve, reject) => {
-    execFile(command, args, { encoding: "utf8", ...options }, (error, stdout, stderr) => {
+    const child = execFile(command, args, { encoding: "utf8", ...options }, (error, stdout, stderr) => {
       if (error) {
         const errWithFields = error as Error & { killed?: boolean; signal?: string | null; code?: number | string | null };
         const execErr = new ExecFileError(error.message);
@@ -53,6 +53,12 @@ export function execFileText(command: string, args: string[], options: ExecFileO
         stderr: typeof stderr === "string" ? stderr : "",
       });
     });
+    // Closed immediately (matches `< /dev/null`): none of this package's
+    // callers pipe anything in, but an open, unwritten stdin pipe (the
+    // default) has been observed making some CLIs (e.g. `claude`) wait a
+    // few seconds checking for piped input and sometimes exit non-zero as
+    // a result, instead of just proceeding immediately.
+    child.stdin?.end();
   });
 }
 
